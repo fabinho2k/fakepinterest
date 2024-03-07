@@ -14,7 +14,7 @@ def homepage():
     formlogin = FormLogin()
     if formlogin.validate_on_submit(): #Se os campos de login forem válidos:
         usuario = Usuario.query.filter_by(email=formlogin.email.data).first() #Procurando no banco de dados, usuário com email passado para login
-        if usuario and  bcrypt.check_password_hash(usuario.senha, formlogin.senha.data): #Se existe esse usuário e a senha está correta:
+        if usuario and  bcrypt.check_password_hash(usuario.senha.encode("utf-8"), formlogin.senha.data): #Se existe esse usuário e a senha está correta:
             login_user(usuario) #Faça login deste usuário
             return redirect(url_for("perfil", id_usuario=usuario.id))  # Após estar logado, o usuário será redirecionado a página do perfil
 
@@ -25,7 +25,7 @@ def criar_conta():
     form_criarconta = FormCriarConta()
     if form_criarconta.validate_on_submit():
 
-        senha = bcrypt.generate_password_hash(form_criarconta.senha.data) #Usando o bcrypt para criptografar a senha do usuário
+        senha = bcrypt.generate_password_hash(form_criarconta.senha.data).decode("utf-8") #Usando o bcrypt para criptografar a senha do usuário
 
         #Para pegarmos informações como no atributo abaixo. Usamamos na ordem: Formulário:from_criarconta o campo: username A informação do campo: campo.data
         usuario = Usuario(username=form_criarconta.username.data,
